@@ -529,7 +529,7 @@ const StudentDashboard = () => {
 
   const fetchLogs = async () => {
     try {
-      const response = await fech(`${config.apiUrl}/api/logs/student/${user.id}`);
+      const response = await fetch(`${config.apiUrl}/api/logs/student/${user.id}`);
       const data = await response.json();
       setLogs(data);
     } catch (error) {
