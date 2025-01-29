@@ -509,6 +509,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext'
 import { FaSun, FaMoon, FaBars, FaTimes } from "react-icons/fa";
+import config from '../config';
 
 const StudentDashboard = () => {
   const [logs, setLogs] = useState([]);
