@@ -608,6 +608,7 @@ const GuardDashboard = () => {
         `${config.apiUrl}/api/logs/approve/${logId}`,
         {
           method: "PATCH",
+          credentials: 'include',
           headers: {
             "Content-Type": "application/json",
           },
@@ -657,6 +658,7 @@ const GuardDashboard = () => {
         `${config.apiUrl}/api/guards/${user.id}`,
         {
           method: "PATCH",
+          credentials: 'include',
           headers: {
             "Content-Type": "application/json",
           },

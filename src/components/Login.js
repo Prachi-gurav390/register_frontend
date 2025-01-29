@@ -182,6 +182,7 @@ const Login = () => {
     try {
       const response = await fetch(`${config.apiUrl}/api/auth/${userType}/register`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
@@ -208,6 +209,7 @@ const Login = () => {
     try {
       const response = await fetch(`${config.apiUrl}/api/auth/login`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'

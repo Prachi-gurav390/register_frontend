@@ -541,6 +541,7 @@ const StudentDashboard = () => {
     try {
       const response = await fetch(`${config.apiUrl}/api/logs/request-out`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -565,6 +566,7 @@ const StudentDashboard = () => {
     try {
       const response = await fetch(`${config.apiUrl}/api/logs/request-in/${logId}`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -584,6 +586,7 @@ const StudentDashboard = () => {
     try {
       const response = await fetch(`${config.apiUrl}/api/students/${user.id}`, {
         method: "PATCH",
+        credentials: 'include',
         headers: {
           "Content-Type": "application/json",
         },
