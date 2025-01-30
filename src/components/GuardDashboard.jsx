@@ -565,7 +565,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useTheme } from "../context/ThemeContext";
 import { FaSun, FaMoon, FaBars, FaTimes } from "react-icons/fa";
-import config from '../config';
+import config from "../config";
 
 const GuardDashboard = () => {
   const [logs, setLogs] = useState([]);
@@ -604,11 +604,9 @@ const GuardDashboard = () => {
 
   const approveRequest = async (logId, type) => {
     try {
-      const response = await fetch(
-        `${config.apiUrl}/api/logs/approve/${logId}`,
-        {
+      const response = await fetch(`${config.apiUrl}/api/logs/approve/${logId}`,{
           method: "PATCH",
-          credentials: 'include',
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
@@ -616,8 +614,7 @@ const GuardDashboard = () => {
             guardId: user.id,
             type,
           }),
-        }
-      );
+        });
 
       if (response.ok) {
         fetchLogs();
@@ -654,17 +651,14 @@ const GuardDashboard = () => {
 
   const handleSave = async () => {
     try {
-      const response = await fetch(
-        `${config.apiUrl}/api/guards/${user.id}`,
-        {
-          method: "PATCH",
-          credentials: 'include',
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ contactNumber: tempContactNumber }),
-        }
-      );
+      const response = await fetch(`${config.apiUrl}/api/guards/${user.id}`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ contactNumber: tempContactNumber }),
+      });
 
       if (response.ok) {
         const updatedGuard = await response.json();
