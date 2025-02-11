@@ -337,7 +337,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "../context/ThemeContext";
 import { FaSun, FaMoon, FaBars, FaTimes } from "react-icons/fa";
 import config from "../config";
@@ -354,10 +354,23 @@ const GuardDashboard = () => {
   );
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const firstName = user.name.split(" ")[0];
   const token = localStorage.getItem("token");
   useEffect(() => {
     fetchLogs();
   }, [view]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest(".menu-container")) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const fetchLogs = async () => {
     try {
@@ -479,21 +492,19 @@ const GuardDashboard = () => {
           : "bg-gray-100 text-gray-900"
       }`}
     >
-      <header className="bg-slate-700 text-white p-4 flex justify-between items-center">
+      <header className="bg-slate-700 text-white p-4 flex justify-between items-center relative menu-container">
         <h1 className="text-2xl font-bold">Guard Dashboard</h1>
-        <div className="flex items-center space-x-4">
-          <div className="">
-            <button
-              onClick={toggleTheme}
-              className="rounded-full p-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none "
-            >
-              {theme === "dark" ? (
-                <FaSun className="h-[1.5rem] w-[1.5rem]" />
-              ) : (
-                <FaMoon className="h-[1.4rem] w-[1.4rem]" />
-              )}
-            </button>
-          </div>
+        <div className="hidden md:flex items-center space-x-4">
+          <button
+            onClick={toggleTheme}
+            className="rounded-full p-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none"
+          >
+            {theme === "dark" ? (
+              <FaSun className="h-6 w-6" />
+            ) : (
+              <FaMoon className="h-6 w-6" />
+            )}
+          </button>
           <button
             onClick={() => setIsProfileVisible(!isProfileVisible)}
             className="px-4 py-2 bg-blue-500 rounded hover:bg-blue-700 transition-colors"
@@ -507,68 +518,113 @@ const GuardDashboard = () => {
             Logout
           </button>
         </div>
-      </header>
+        <button
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className="md:hidden p-2 rounded-lg hover:bg-slate-600 transition-colors"
+        >
+          {isMenuOpen ? (
+            <FaTimes className="h-6 w-6" />
+          ) : (
+            <FaBars className="h-6 w-6" />
+          )}
+        </button>
 
-      <main className="container mx-auto mt-8 p-4">
-        {/* <AnimatePresence> */}
-        {isProfileVisible && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className={`mb-8 p-4 rounded-lg shadow-lg ${
-              theme === "dark" ? "bg-gray-800" : "bg-white"
-            }`}
-          >
-            <h2 className="text-xl font-bold mb-4">Profile</h2>
-            <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
-              <div>Name: {user.name}</div>
-              <div>Email: {user.email}</div>
-              <div>
-                Contact no:{" "}
-                {isEditing ? (
-                  <>
-                    <input
-                      value={tempContactNumber}
-                      onChange={(e) => setTempContactNumber(e.target.value)}
-                      className={`p-1 rounded ${
-                        theme === "dark"
-                          ? "bg-gray-700 text-white"
-                          : "bg-gray-100 text-black"
-                      }`}
-                    />
-                    <button
-                      onClick={handleSave}
-                      className="ml-2 px-2 py-1 bg-green-500 rounded hover:bg-green-600 transition-colors"
-                    >
-                      Save
-                    </button>
-                    <button
-                      onClick={() => {
-                        setIsEditing(false);
-                        setTempContactNumber(user.contactNumber);
-                      }}
-                      className="ml-2 px-2 py-1 bg-red-500 rounded hover:bg-red-600 transition-colors"
-                    >
-                      Cancel
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    {user.contactNumber}
-                    <button
-                      onClick={() => setIsEditing(true)}
-                      className="ml-2 px-2 py-1 bg-blue-500 rounded hover:bg-blue-600 transition-colors"
-                    >
-                      Edit
-                    </button>
-                  </>
-                )}
+        {/* Mobile Dropdown Menu */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="absolute top-full right-0 mt-2 mr-2 w-fit bg-slate-700 rounded-lg shadow-xl z-50"
+            >
+              <div className="flex flex-col items-center p-2 space-y-2">
+                <button
+                  onClick={toggleTheme}
+                  className="px-4 py-2 text-left rounded hover:bg-slate-600 transition-colors"
+                >
+                  {theme === "dark" ? "Light Theme" : "Dark Theme"}
+                </button>
+                <button
+                  onClick={() => {
+                    setIsProfileVisible(!isProfileVisible);
+                    setIsMenuOpen(false);
+                  }}
+                  className="px-4 py-2 text-left rounded hover:bg-slate-600 transition-colors"
+                >
+                  {isProfileVisible ? "Hide Profile" : "View Profile"}
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="px-4 py-2 text-left rounded hover:bg-slate-600 transition-colors"
+                >
+                  Logout
+                </button>
               </div>
-            </div>
-          </motion.div>
-        )}
-        {/* </AnimatePresence> */}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </header>
+      <main className="container mx-auto mt-8 p-4">
+        <AnimatePresence>
+          {isProfileVisible && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className={`mb-8 p-4 rounded-lg shadow-lg ${
+                theme === "dark" ? "bg-gray-800" : "bg-white"
+              }`}
+            >
+              <h2 className="text-xl font-bold mb-4">Profile</h2>
+              <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
+                <div>Name: {user.name}</div>
+                <div>Email: {user.email}</div>
+                <div>
+                  Contact no:{" "}
+                  {isEditing ? (
+                    <>
+                      <input
+                        value={tempContactNumber}
+                        onChange={(e) => setTempContactNumber(e.target.value)}
+                        className={`p-1 rounded ${
+                          theme === "dark"
+                            ? "bg-gray-700 text-white"
+                            : "bg-gray-100 text-black"
+                        }`}
+                      />
+                      <button
+                        onClick={handleSave}
+                        className="ml-2 px-2 py-1 bg-green-500 rounded hover:bg-green-600 transition-colors"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => {
+                          setIsEditing(false);
+                          setTempContactNumber(user.contactNumber);
+                        }}
+                        className="ml-2 px-2 py-1 bg-red-500 rounded hover:bg-red-600 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      {user.contactNumber}
+                      <button
+                        onClick={() => setIsEditing(true)}
+                        className="ml-2 px-2 py-1 bg-blue-500 rounded hover:bg-blue-600 transition-colors"
+                      >
+                        Edit
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
         <div className="mb-8 flex flex-col md:flex-row  items-start md:justify-between md:items-center gap-2 md:gap-0">
           <div>
             <select
