@@ -1,266 +1,23 @@
-// // components/GuardDashboard.js
 // import React, { useState, useEffect } from "react";
 // import { useAuth } from "../context/AuthContext";
 // import { useNavigate } from "react-router-dom";
-
-// const GuardDashboard = () => {
-//   const [logs, setLogs] = useState([]);
-//   const [view, setView] = useState("pending"); // 'pending' or 'all'
-//   const { user, logout, login } = useAuth();
-//   const [searchstudent, setSearchstudent] = useState("");
-//   const [isprofilevisible, setIsprofilevisible] = useState(false);
-//   const [isEditing, setIsEditing] = useState(false);
-//   const [tempContactNumber, setTempContactNumber] = useState(
-//     user.contactNumber
-//   );
-//   const navigate = useNavigate();
-
-//   useEffect(() => {
-//     fetchLogs();
-//   }, [view]);
-
-//   const fetchLogs = async () => {
-//     try {
-//       // const endpoint = view === 'pending' ? 'http://localhost:5000/api/logs/pending' : 'http://localhost:5000/api/logs/all';
-//       let endpoint;
-//       if (view === "pending") {
-//         endpoint = "http://localhost:5000/api/logs/pending";
-//       } else if (view === "all") {
-//         endpoint = "http://localhost:5000/api/logs/all";
-//       } else {
-//         endpoint = "http://localhost:5000/api/logs/outside";
-//       }
-//       const response = await fetch(endpoint);
-//       const data = await response.json();
-//       setLogs(data);
-//     } catch (error) {
-//       console.error("Error fetching logs:", error);
-//     }
-//   };
-
-//   const approveRequest = async (logId, type) => {
-//     try {
-//       const response = await fetch(
-//         `http://localhost:5000/api/logs/approve/${logId}`,
-//         {
-//           method: "PATCH",
-//           headers: {
-//             "Content-Type": "application/json",
-//           },
-//           body: JSON.stringify({
-//             guardId: user.id,
-//             type,
-//           }),
-//         }
-//       );
-
-//       if (response.ok) {
-//         fetchLogs();
-//       } else {
-//         alert("Failed to approve request");
-//       }
-//     } catch (error) {
-//       console.error("Error approving request:", error);
-//     }
-//   };
-//   const searchstudid = async () => {
-//     try {
-//       const response = await fetch("http://localhost:5000/api/logs/all");
-//       if (!response.ok) {
-//         alert("Failed to fetch logs");
-//         return;
-//       }
-
-//       const data = await response.json();
-
-//       // 2. Filter logs for the specific roll number the guard typed
-//       const filteredLogs = data.filter((log) => {
-//         return log.student.rollNumber === searchstudent;
-//       });
-//       if (Object.keys(filteredLogs).length === 0) {
-//         alert("No logs found for the given roll number");
-//       }
-//       // console.log(filteredLogs);
-//       // 3. Update your local state with the filtered logs
-//       setLogs(filteredLogs);
-//       // console.log(logs);
-//     } catch (error) {
-//       console.error("Error fetching logs:", error);
-//     }
-//   };
-//   const handleSave = async () => {
-//     try {
-//       const response = await fetch(
-//         `http://localhost:5000/api/guards/${user.id}`,
-//         {
-//           method: "PATCH",
-//           headers: {
-//             "Content-Type": "application/json",
-//           },
-//           body: JSON.stringify({ contactNumber: tempContactNumber }),
-//         }
-//       );
-
-//       if (response.ok) {
-//         const updatedGuard = await response.json();
-//         // Update the entire user object in context and localStorage
-//         login({
-//           ...user,
-//           contactNumber: updatedGuard.contactNumber,
-//         });
-//         setIsEditing(false);
-//       } else {
-//         console.error("Failed to update contact number");
-//       }
-//     } catch (error) {
-//       console.error("Error updating contact number:", error);
-//     }
-//   };
-
-//   const handleLogout = () => {
-//     logout();
-//     navigate("/login");
-//   };
-//   const viewprofile = () => {
-//     setIsprofilevisible(true);
-//   };
-//   return (
-//     <div className="dashboard">
-//       <header>
-//         <h1>Guard Dashboard</h1>
-//         {!isprofilevisible && (
-//           <button onClick={viewprofile}>View Profile</button>
-//         )}
-//         {isprofilevisible && (
-//           <div>
-//             <button onClick={() => setIsprofilevisible(false)}>X</button>
-//             <div>Profile</div>
-//             <div>Name: {user.name}</div>
-//             <div>Email: {user.email}</div>
-//             <div>
-//               Contact no:{" "}
-//               {isEditing ? (
-//                 <>
-//                   <input
-//                     value={tempContactNumber}
-//                     onChange={(e) => setTempContactNumber(e.target.value)}
-//                   />
-//                   <button onClick={handleSave}>Save</button>
-//                   <button
-//                     onClick={() => {
-//                       setIsEditing(false);
-//                       setTempContactNumber(user.contactNumber);
-//                     }}
-//                   >
-//                     Cancel
-//                   </button>
-//                 </>
-//               ) : (
-//                 <>
-//                   {user.contactNumber}
-//                   <button onClick={() => setIsEditing(true)}>Edit</button>
-//                 </>
-//               )}
-//             </div>
-//           </div>
-//         )}
-//         <div className="controls">
-//           <select value={view} onChange={(e) => setView(e.target.value)}>
-//             <option value="pending">Pending Requests</option>
-//             <option value="all">All Logs</option>
-//             <option value="outside">Outside campus</option>
-//           </select>
-//           <button onClick={handleLogout}>Logout</button>
-//         </div>
-//         <section className="search-student">
-//           <h2>Search for student log</h2>
-//           <input
-//             type="text"
-//             placeholder="Enter student id"
-//             value={searchstudent}
-//             onChange={(e) => setSearchstudent(e.target.value)}
-//           />
-//           <button onClick={searchstudid}>Submit Request</button>
-//         </section>
-//       </header>
-
-//       <section className="logs">
-//         <table>
-//           <thead>
-//             <tr>
-//               <th>Date</th>
-//               <th>Student Name</th>
-//               <th>Roll No</th>
-//               <th>Room No</th>
-//               <th>Contact</th>
-//               <th>Location</th>
-//               <th>Out Time</th>
-//               <th>Out Status</th>
-//               <th>In Time</th>
-//               <th>In Status</th>
-//               {/* <th>Actions</th> */}
-//             </tr>
-//           </thead>
-//           <tbody>
-//             {logs.map((log) => (
-//               <tr key={log._id}>
-//                 <td>{new Date(log.outTime).toLocaleDateString()}</td>
-//                 <td>{log.student.name}</td>
-//                 <td>{log.student.rollNumber}</td>
-//                 <td>{log.student.roomNumber}</td>
-//                 <td>{log.student.contactNumber}</td>
-//                 <td>{log.location}</td>
-//                 <td>{new Date(log.outTime).toLocaleString()}</td>
-//                 <td>
-//                   {log.outApproval.status === "pending" ? (
-//                     <button onClick={() => approveRequest(log._id, "out")}>
-//                       Approve Out
-//                     </button>
-//                   ) : (
-//                     `Approved by ${log.outApproval.guard.name}`
-//                   )}
-//                 </td>
-//                 <td>
-//                   {log.inTime ? new Date(log.inTime).toLocaleString() : "-"}
-//                 </td>
-//                 <td>
-//                   {log.inTime && log.inApproval.status === "pending" ? (
-//                     <button onClick={() => approveRequest(log._id, "in")}>
-//                       Approve In
-//                     </button>
-//                   ) : log.inTime ? (
-//                     `Approved by ${log.inApproval.guard?.name || "-"}`
-//                   ) : (
-//                     "-"
-//                   )}
-//                 </td>
-//               </tr>
-//             ))}
-//           </tbody>
-//         </table>
-//       </section>
-//     </div>
-//   );
-// };
-
-// export default GuardDashboard;
-
-// import React, { useState, useEffect } from "react";
-// import { useAuth } from "../context/AuthContext";
 // import { motion } from "framer-motion";
 // import { useTheme } from "../context/ThemeContext";
+// import { FaSun, FaMoon, FaBars, FaTimes } from "react-icons/fa";
+// import config from "../config";
 
 // const GuardDashboard = () => {
 //   const [logs, setLogs] = useState([]);
 //   const [view, setView] = useState("pending");
-//   const { user, login } = useAuth();
+//   const { user, logout, login } = useAuth();
 //   const [searchStudent, setSearchStudent] = useState("");
 //   const [isProfileVisible, setIsProfileVisible] = useState(false);
 //   const [isEditing, setIsEditing] = useState(false);
 //   const [tempContactNumber, setTempContactNumber] = useState(
 //     user.contactNumber
 //   );
-//   const { theme } = useTheme();
+//   const navigate = useNavigate();
+//   const { theme, toggleTheme } = useTheme();
 
 //   useEffect(() => {
 //     fetchLogs();
@@ -270,11 +27,11 @@
 //     try {
 //       let endpoint;
 //       if (view === "pending") {
-//         endpoint = "http://localhost:5000/api/logs/pending";
+//         endpoint = `${config.apiUrl}/api/logs/pending`;
 //       } else if (view === "all") {
-//         endpoint = "http://localhost:5000/api/logs/all";
+//         endpoint = `${config.apiUrl}/api/logs/all`;
 //       } else {
-//         endpoint = "http://localhost:5000/api/logs/outside";
+//         endpoint = `${config.apiUrl}/api/logs/outside`;
 //       }
 //       const response = await fetch(endpoint);
 //       const data = await response.json();
@@ -286,10 +43,9 @@
 
 //   const approveRequest = async (logId, type) => {
 //     try {
-//       const response = await fetch(
-//         `http://localhost:5000/api/logs/approve/${logId}`,
-//         {
+//       const response = await fetch(`${config.apiUrl}/api/logs/approve/${logId}`,{
 //           method: "PATCH",
+//           credentials: "include",
 //           headers: {
 //             "Content-Type": "application/json",
 //           },
@@ -297,8 +53,7 @@
 //             guardId: user.id,
 //             type,
 //           }),
-//         }
-//       );
+//         });
 
 //       if (response.ok) {
 //         fetchLogs();
@@ -312,7 +67,7 @@
 
 //   const searchStudentId = async () => {
 //     try {
-//       const response = await fetch("http://localhost:5000/api/logs/all");
+//       const response = await fetch(`${config.apiUrl}/api/logs/all`);
 //       if (!response.ok) {
 //         alert("Failed to fetch logs");
 //         return;
@@ -335,16 +90,14 @@
 
 //   const handleSave = async () => {
 //     try {
-//       const response = await fetch(
-//         `http://localhost:5000/api/guards/${user.id}`,
-//         {
-//           method: "PATCH",
-//           headers: {
-//             "Content-Type": "application/json",
-//           },
-//           body: JSON.stringify({ contactNumber: tempContactNumber }),
-//         }
-//       );
+//       const response = await fetch(`${config.apiUrl}/api/guards/${user.id}`, {
+//         method: "PATCH",
+//         credentials: "include",
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify({ contactNumber: tempContactNumber }),
+//       });
 
 //       if (response.ok) {
 //         const updatedGuard = await response.json();
@@ -361,6 +114,11 @@
 //     }
 //   };
 
+//   const handleLogout = () => {
+//     logout();
+//     navigate("/login");
+//   };
+
 //   return (
 //     <div
 //       className={`min-h-screen ${
@@ -369,29 +127,49 @@
 //           : "bg-gray-100 text-gray-900"
 //       }`}
 //     >
-//       <main className="container mx-auto mt-8 p-4">
-//         <motion.button
-//           whileHover={{ scale: 1.05 }}
-//           whileTap={{ scale: 0.95 }}
-//           onClick={() => setIsProfileVisible(!isProfileVisible)}
-//           className="mb-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-//         >
-//           {isProfileVisible ? "Hide Profile" : "View Profile"}
-//         </motion.button>
+//       <header className="bg-slate-700 text-white p-4 flex justify-between items-center">
+//         <h1 className="text-2xl font-bold">Guard Dashboard</h1>
+//         <div className="flex space-x-2">
+//           <div className="">
+//             <button
+//               onClick={toggleTheme}
+//               className="rounded-full p-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none "
+//             >
+//               {theme === "dark" ? (
+//                 <FaSun className="h-[1.5rem] w-[1.5rem]" />
+//               ) : (
+//                 <FaMoon className="h-[1.4rem] w-[1.4rem]" />
+//               )}
+//             </button>
+//           </div>
+//           <button
+//             onClick={() => setIsProfileVisible(!isProfileVisible)}
+//             className="px-4 py-2 bg-blue-500 rounded hover:bg-blue-700 transition-colors"
+//           >
+//             {isProfileVisible ? "Hide Profile" : "View Profile"}
+//           </button>
+//           <button
+//             onClick={handleLogout}
+//             className="px-4 py-2 bg-red-500 rounded hover:bg-red-700 transition-colors"
+//           >
+//             Logout
+//           </button>
+//         </div>
+//       </header>
 
+//       <main className="container mx-auto mt-8 p-4">
+//          {/* <AnimatePresence> */}
 //         {isProfileVisible && (
 //           <motion.div
 //             initial={{ opacity: 0, y: -20 }}
 //             animate={{ opacity: 1, y: 0 }}
 //             exit={{ opacity: 0, y: -20 }}
 //             className={`mb-8 p-4 rounded-lg shadow-lg ${
-//               theme === "dark"
-//                 ? "bg-gray-800 bg-opacity-50"
-//                 : "bg-white bg-opacity-50"
-//             } backdrop-filter backdrop-blur-lg`}
+//               theme === "dark" ? "bg-gray-800" : "bg-white"
+//             }`}
 //           >
 //             <h2 className="text-xl font-bold mb-4">Profile</h2>
-//             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//             <div className="grid grid-cols-2 gap-4">
 //               <div>Name: {user.name}</div>
 //               <div>Email: {user.email}</div>
 //               <div>
@@ -438,8 +216,8 @@
 //             </div>
 //           </motion.div>
 //         )}
-
-//         <div className="mb-8 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+//          {/* </AnimatePresence> */}
+//         <div className="mb-8 flex justify-between items-center">
 //           <select
 //             value={view}
 //             onChange={(e) => setView(e.target.value)}
@@ -467,19 +245,16 @@
 //             />
 //             <button
 //               onClick={searchStudentId}
-//               className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+//               className="px-4 py-2 bg-blue-500 rounded hover:bg-blue-600 transition-colors"
 //             >
 //               Search
 //             </button>
 //           </div>
 //         </div>
-
 //         <div
 //           className={`overflow-x-auto ${
-//             theme === "dark"
-//               ? "bg-gray-800 bg-opacity-50"
-//               : "bg-white bg-opacity-50"
-//           } backdrop-filter backdrop-blur-lg rounded-lg shadow`}
+//             theme === "dark" ? "bg-gray-800" : "bg-white"
+//           } rounded-lg shadow`}
 //         >
 //           <table className="w-full table-auto">
 //             <thead
@@ -496,10 +271,10 @@
 //                 <th className="px-4 py-2">Out Status</th>
 //                 <th className="px-4 py-2">In Time</th>
 //                 <th className="px-4 py-2">In Status</th>
-//                 <th className="px-4 py-2">Actions</th>
+//                 {/* <th className="px-4 py-2">Actions</th> */}
 //               </tr>
 //             </thead>
-//             <tbody>
+//             <tbody className="text-center">
 //               {logs.map((log) => (
 //                 <tr
 //                   key={log._id}
@@ -522,7 +297,7 @@
 //                     {log.outApproval.status === "pending" ? (
 //                       <button
 //                         onClick={() => approveRequest(log._id, "out")}
-//                         className="px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+//                         className="px-2 py-1 bg-green-500 rounded hover:bg-green-600 transition-colors"
 //                       >
 //                         Approve Out
 //                       </button>
@@ -537,7 +312,7 @@
 //                     {log.inTime && log.inApproval.status === "pending" ? (
 //                       <button
 //                         onClick={() => approveRequest(log._id, "in")}
-//                         className="px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+//                         className="px-2 py-1 bg-green-500 rounded hover:bg-green-600 transition-colors"
 //                       >
 //                         Approve In
 //                       </button>
@@ -579,7 +354,7 @@ const GuardDashboard = () => {
   );
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
-
+  const token = localStorage.getItem("token");
   useEffect(() => {
     fetchLogs();
   }, [view]);
@@ -594,7 +369,11 @@ const GuardDashboard = () => {
       } else {
         endpoint = `${config.apiUrl}/api/logs/outside`;
       }
-      const response = await fetch(endpoint);
+      const response = await fetch(endpoint, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const data = await response.json();
       setLogs(data);
     } catch (error) {
@@ -604,17 +383,21 @@ const GuardDashboard = () => {
 
   const approveRequest = async (logId, type) => {
     try {
-      const response = await fetch(`${config.apiUrl}/api/logs/approve/${logId}`,{
+      const response = await fetch(
+        `${config.apiUrl}/api/logs/approve/${logId}`,
+        {
           method: "PATCH",
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             guardId: user.id,
             type,
           }),
-        });
+        }
+      );
 
       if (response.ok) {
         fetchLogs();
@@ -628,7 +411,11 @@ const GuardDashboard = () => {
 
   const searchStudentId = async () => {
     try {
-      const response = await fetch(`${config.apiUrl}/api/logs/all`);
+      const response = await fetch(`${config.apiUrl}/api/logs/all`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (!response.ok) {
         alert("Failed to fetch logs");
         return;
@@ -656,16 +443,20 @@ const GuardDashboard = () => {
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ contactNumber: tempContactNumber }),
       });
 
       if (response.ok) {
         const updatedGuard = await response.json();
-        login({
-          ...user,
-          contactNumber: updatedGuard.contactNumber,
-        });
+        login(
+          {
+            ...user,
+            contactNumber: updatedGuard.contactNumber,
+          },
+          token
+        );
         setIsEditing(false);
       } else {
         console.error("Failed to update contact number");
@@ -719,6 +510,7 @@ const GuardDashboard = () => {
       </header>
 
       <main className="container mx-auto mt-8 p-4">
+        {/* <AnimatePresence> */}
         {isProfileVisible && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -776,6 +568,7 @@ const GuardDashboard = () => {
             </div>
           </motion.div>
         )}
+        {/* </AnimatePresence> */}
         <div className="mb-8 flex justify-between items-center">
           <select
             value={view}
