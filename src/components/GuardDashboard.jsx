@@ -481,7 +481,7 @@ const GuardDashboard = () => {
     >
       <header className="bg-slate-700 text-white p-4 flex justify-between items-center">
         <h1 className="text-2xl font-bold">Guard Dashboard</h1>
-        <div className="flex space-x-4">
+        <div className="flex items-center space-x-4">
           <div className="">
             <button
               onClick={toggleTheme}
