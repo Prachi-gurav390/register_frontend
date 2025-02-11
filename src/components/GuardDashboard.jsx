@@ -481,7 +481,7 @@ const GuardDashboard = () => {
     >
       <header className="bg-slate-700 text-white p-4 flex justify-between items-center">
         <h1 className="text-2xl font-bold">Guard Dashboard</h1>
-        <div className="flex space-x-2">
+        <div className="flex space-x-4">
           <div className="">
             <button
               onClick={toggleTheme}
@@ -521,7 +521,7 @@ const GuardDashboard = () => {
             }`}
           >
             <h2 className="text-xl font-bold mb-4">Profile</h2>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
               <div>Name: {user.name}</div>
               <div>Email: {user.email}</div>
               <div>
@@ -569,20 +569,22 @@ const GuardDashboard = () => {
           </motion.div>
         )}
         {/* </AnimatePresence> */}
-        <div className="mb-8 flex justify-between items-center">
-          <select
-            value={view}
-            onChange={(e) => setView(e.target.value)}
-            className={`p-2 rounded ${
-              theme === "dark"
-                ? "bg-gray-700 text-white"
-                : "bg-white text-black"
-            }`}
-          >
-            <option value="pending">Pending Requests</option>
-            <option value="all">All Logs</option>
-            <option value="outside">Outside campus</option>
-          </select>
+        <div className="mb-8 flex flex-col md:flex-row  items-start md:justify-between md:items-center gap-2 md:gap-0">
+          <div>
+            <select
+              value={view}
+              onChange={(e) => setView(e.target.value)}
+              className={`p-2 rounded ${
+                theme === "dark"
+                  ? "bg-gray-700 text-white"
+                  : "bg-white text-black"
+              }`}
+            >
+              <option value="pending">Pending Requests</option>
+              <option value="all">All Logs</option>
+              <option value="outside">Outside campus</option>
+            </select>
+          </div>
           <div className="flex space-x-2">
             <input
               type="text"

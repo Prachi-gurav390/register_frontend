@@ -379,11 +379,14 @@ const StudentDashboard = () => {
 
       if (response.ok) {
         const updatedStudent = await response.json();
-        login({
-          ...user,
-          contactNumber: updatedStudent.contactNumber,
-          roomNumber: updatedStudent.roomNumber,
-        }, token);
+        login(
+          {
+            ...user,
+            contactNumber: updatedStudent.contactNumber,
+            roomNumber: updatedStudent.roomNumber,
+          },
+          token
+        );
         setIsEditing1(false);
         setIsEditing(false);
       } else {
@@ -407,7 +410,7 @@ const StudentDashboard = () => {
           : "bg-gray-100 text-gray-900"
       }`}
     >
-      <header className="bg-blue-600 text-white p-4 flex justify-between items-center">
+      <header className="bg-slate-700 text-white p-4 flex justify-between items-center">
         <h1 className="text-2xl font-bold">Welcome, {user.name}</h1>
         <div className="flex items-center space-x-4">
           <div className="">
@@ -424,7 +427,7 @@ const StudentDashboard = () => {
           </div>
           <button
             onClick={() => setIsProfileVisible(!isProfileVisible)}
-            className="px-4 py-2 bg-green-500 rounded hover:bg-green-700 transition-colors"
+            className="px-4 py-2 bg-blue-500 rounded hover:bg-blue-700transition-colors"
           >
             {isProfileVisible ? "Hide Profile" : "View Profile"}
           </button>
